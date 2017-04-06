@@ -25,12 +25,12 @@ betaOxidation(FA cs dbs) = if cs > 2
                              else FA cs dbs
 
 delta5 :: FA -> FA
-delta5(FA cs dbs) = if 5 `notElem` dbs && cs > 5
+delta5(FA cs dbs) = if 5 `notElem` dbs && cs > 6
                       then FA cs (5:dbs)
                       else FA cs dbs
 
 delta6 :: FA -> FA
-delta6(FA cs dbs) = if 6 `notElem` dbs && cs > 6
+delta6(FA cs dbs) = if 6 `notElem` dbs && cs > 7
                       then FA cs (6:dbs)
                       else FA cs dbs
 
