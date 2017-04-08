@@ -10,7 +10,7 @@ data FA = FA Int [Int] deriving (Eq, Ord)
 
 instance Show FA where
   show (FA cs dbs) =
-    let doubleBonds = intercalate "," ((++ "Z") . show <$> dbs)
+    let doubleBonds = intercalate "," ((<> "Z") . show <$> dbs)
     in
       if null doubleBonds
         then show cs <> ":" <> show (length dbs)
@@ -24,26 +24,36 @@ elongase :: FA -> FA
 elongase(FA cs dbs) = FA (cs + 2) (fmap (+2) dbs)
 
 betaOxidation :: FA -> FA
-betaOxidation(FA cs dbs) = if cs > 2
-                             then FA (cs - 2) (fmap (\n -> n - 2) dbs)
-                             else FA cs dbs
+betaOxidation fa =
+  case fa of
+    unreactedFA@(FA cs dbs) ->
+      if cs > 2
+        then FA (cs - 2) (fmap (\n -> n - 2) dbs)
+        else unreactedFA
 
 delta5 :: FA -> FA
-delta5(FA cs dbs) = if all (> 5) dbs && cs > 6
-                      then FA cs (5:dbs)
-                      else FA cs dbs
+delta5 fa =
+  case fa of
+    unreactedFA@(FA cs dbs) ->
+      if all (> 5) dbs && cs > 6
+        then FA cs (5:dbs)
+        else unreactedFA
 
 delta6 :: FA -> FA
-delta6(FA cs dbs) = if all (> 6) dbs && cs > 7
-                      then FA cs (6:dbs)
-                      else FA cs dbs
+delta6 fa =
+  case fa of
+    unreactedFA@(FA cs dbs) ->
+      if all (> 6) dbs && cs > 7
+        then FA cs (6:dbs)
+        else unreactedFA
 
 enzymes = [elongase, betaOxidation, delta5, delta6]
 
 convertToWriter :: (FA -> FA) -> FA -> Writer [FA] FA
-convertToWriter f fa = do
-                         tell [fa]
-                         return (f fa)
+convertToWriter f fa =
+  do
+    tell [fa]
+    return (f fa)
 
 findPathways :: [FA -> FA] -> FA -> FA -> [[FA]]
 findPathways enzymes product' precursor =
