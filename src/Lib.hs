@@ -65,8 +65,7 @@ findPathways enzymes product' precursor =
     explorePathways enzymes' wFAs  = do
       enzyme <- enzymes'
       wFA <- wFAs
-      let pair = runWriter wFA
-      guard $ uncurry notElem pair
+      guard . uncurry notElem $ runWriter wFA
       return $ convertToWriter enzyme =<< wFA
     loop :: [FA -> FA] -> [Writer [FA] FA] -> FA -> Int -> [Writer [FA] FA]
     loop enzymes' wFAs product'' count =
