@@ -3,7 +3,7 @@ module Lib where
 import Control.Monad.Writer.Strict
 import Data.List (intercalate)
 import Data.Monoid ((<>))
-import Control.Monad
+import Control.Monad (guard)
 
 
 data FA = FA Int [Int] deriving (Eq, Ord)
@@ -50,8 +50,7 @@ delta6 fa =
 enzymes = [elongase, betaOxidation, delta5, delta6]
 
 convertToWriter :: (FA -> FA) -> FA -> Writer [FA] FA
-convertToWriter f fa =
-  do
+convertToWriter f fa = do
     tell [fa]
     return (f fa)
 
@@ -62,7 +61,7 @@ findPathways enzymes product' precursor =
        fmap (\fas -> snd fas <> [fst fas]) pathways
   where
     explorePathways :: [FA -> FA] -> [Writer [FA] FA] -> [Writer [FA] FA]
-    explorePathways enzymes' wFAs  = do
+    explorePathways enzymes' wFAs = do
       enzyme <- enzymes'
       wFA <- wFAs
       guard . uncurry notElem $ runWriter wFA
