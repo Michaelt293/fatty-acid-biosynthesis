@@ -7,4 +7,5 @@ The underlying idea is that classes of molecules can be represented as data type
 The output for this program is:
 
 Biosynthetic pathway/s found:
+
 9Z,12Z,15Z-18:3 -> 6Z,9Z,12Z,15Z-18:4 -> 8Z,11Z,14Z,17Z-20:4 -> 5Z,8Z,11Z,14Z,17Z-20:5 -> 7Z,10Z,13Z,16Z,19Z-22:5 -> 9Z,12Z,15Z,18Z,21Z-24:5 -> 6Z,9Z,12Z,15Z,18Z,21Z-24:6 -> 4Z,7Z,10Z,13Z,16Z,19Z-22:6
