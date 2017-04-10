@@ -75,7 +75,7 @@ findPathways enzymes product' precursor =
     loop enzymes' wFAs product'' count =
       let products = explorePathways enzymes' wFAs
       in
-        if product'' `elem` fmap fst (runWriterT products)
+        if product'' `elem` concat (execWriterT products)
           then products
           else if count == 0
                  then WriterT []
