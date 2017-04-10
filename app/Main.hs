@@ -4,6 +4,7 @@ import Lib
 import Data.List (intercalate)
 import Data.Monoid ((<>))
 
+
 main :: IO ()
 main = do
   let pathways = findPathways enzymes dha ala
