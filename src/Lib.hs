@@ -49,29 +49,29 @@ delta6 fa =
 
 enzymes = [elongase, betaOxidation, delta5, delta6]
 
-convertToWriter :: (FA -> FA) -> FA -> Writer [FA] FA
+convertToWriter :: (FA -> FA) -> FA -> WriterT [FA] [] FA
 convertToWriter f fa = do
     tell [fa]
     return (f fa)
 
 findPathways :: [FA -> FA] -> FA -> FA -> [[FA]]
 findPathways enzymes product' precursor =
-  let pathways = runWriter <$> loop enzymes [return precursor] product' 10
+  let pathways = runWriterT $ loop enzymes (return precursor) product' 10
   in filter (\pathway -> product' `elem` pathway) $
        fmap (\fas -> snd fas <> [fst fas]) pathways
   where
-    explorePathways :: [FA -> FA] -> [Writer [FA] FA] -> [Writer [FA] FA]
+    explorePathways :: [FA -> FA] -> WriterT [FA] [] FA -> WriterT [FA] [] FA
     explorePathways enzymes' wFAs = do
-      enzyme <- enzymes'
+      enzyme <- lift enzymes'
       wFA <- wFAs
-      guard . uncurry notElem $ runWriter wFA
-      return $ convertToWriter enzyme =<< wFA
-    loop :: [FA -> FA] -> [Writer [FA] FA] -> FA -> Int -> [Writer [FA] FA]
+      --guard . uncurry notElem $ runWriter wFA
+      convertToWriter enzyme wFA
+    loop :: [FA -> FA] -> WriterT [FA] [] FA -> FA -> Int -> WriterT [FA] [] FA
     loop enzymes' wFAs product'' count =
       let products = explorePathways enzymes' wFAs
       in
-        if product'' `elem` fmap (fst . runWriter) products
+        if product'' `elem` fmap fst (runWriterT products)
           then products
           else if count == 0
-                 then []
+                 then WriterT []
                  else loop enzymes' products product'' (count - 1)
