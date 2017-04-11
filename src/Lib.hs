@@ -1,7 +1,7 @@
 module Lib where
 
 import Control.Monad.Writer.Lazy
-import Data.List (intercalate)
+import Data.List (intercalate, nub)
 import Data.Monoid ((<>))
 import Control.Monad (guard)
 
@@ -60,8 +60,7 @@ convertToWriter f fa = do
 findPathways :: [FA -> FA] -> FA -> FA -> [[FA]]
 findPathways enzymes product' precursor =
   let pathways = runWriterT $ loop enzymes (return precursor) product' 10
-  in filter (\pathway -> product' `elem` pathway) $
-       fmap (\fas -> snd fas <> [fst fas]) pathways
+  in nub . filter (\pathway -> product' `elem` pathway) $ fmap snd pathways
   where
     explorePathways :: [FA -> FA] -> WriterT [FA] [] FA -> WriterT [FA] [] FA
     explorePathways enzymes' wFAs = do
